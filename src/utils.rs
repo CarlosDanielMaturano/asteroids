@@ -4,6 +4,12 @@ use std::ops::{Add, Sub, Div, Mul};
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Vector2(pub f64, pub f64);
 
+impl Vector2 {
+    pub fn as_i32(&self) -> (i32, i32) {
+        (self.0 as i32, self.1 as i32)
+    }
+}
+
 impl Add for Vector2 {
     type Output = Self;
     fn add(self, rhs: Self) -> Self::Output {
