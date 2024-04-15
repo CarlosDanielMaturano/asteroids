@@ -6,7 +6,7 @@ const WINDOW_TITLE: &str = "Asteroids";
 const WINDOW_WIDTH: u32 = 512;
 const WINDOW_HEIGHT: u32 = 512;
 const BACKGROUND_COLOR: Color = Color::BLACK;
-const PIXEL_SIZE: u32 = 8;
+const PIXEL_SIZE: u32 = 4;
 
 pub struct Screen {
     ctx: sdl2::Sdl,
