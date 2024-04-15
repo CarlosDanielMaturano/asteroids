@@ -6,7 +6,7 @@ const WINDOW_TITLE: &str = "Asteroids";
 const WINDOW_WIDTH: u32 = 512;
 const WINDOW_HEIGHT: u32 = 512;
 const BACKGROUND_COLOR: Color = Color::BLACK;
-const PIXEL_SIZE: u32 = 4;
+const PIXEL_SIZE: u32 = 8;
 
 pub struct Screen {
     ctx: sdl2::Sdl,
@@ -25,9 +25,9 @@ impl Screen {
             .expect("sdl2 window");
         let canvas = window.into_canvas().build().expect("sdl2 canvas");
         Self {
-            ctx: sdl_context, 
+            ctx: sdl_context,
             canvas,
-            should_close: false
+            should_close: false,
         }
     }
 
@@ -52,5 +52,56 @@ impl Screen {
         if let Err(err) = self.canvas.fill_rect(pixel) {
             panic!("Unexpected error while drawing: {err}")
         };
+    }
+
+    pub fn draw_line(&mut self, start: Vector2, end: Vector2, color: Color) {
+        let Vector2(delta_x, delta_y) = end - start;
+        let (x_end, y_end) = end.as_i32();
+        let mut err = 0.5;
+        
+        if delta_x.abs() > delta_y.abs() {
+            let y_step = if delta_y < 0.0 { -1 } else { 1 };
+            let mut slope = delta_y.abs() / delta_x.abs();
+            if slope.is_nan() {
+                slope = 0.0;
+            }
+            let (x_start, mut y) = start.as_i32();
+            let range: Box<dyn Iterator<Item = i32>> = if delta_x > 0.0 {
+                Box::new(x_start..=x_end)
+            } else {
+                Box::new((x_end..=x_start).rev())
+            };
+            for x in range {
+                self.draw_pixel(Vector2(x as f64, y as f64), color);
+                err += slope;
+                if err >= 1.0 {
+                    err -= 1.0;
+                    y += y_step;
+                }
+            }
+        } else {
+            let x_step = if delta_x < 0.0 { -1 } else { 1 };
+            let mut slope = delta_x.abs() / delta_y.abs();
+            if slope.is_nan() {
+                slope = 0.0
+            }
+
+            let (mut x, y_start) = start.as_i32();
+            let range: Box<dyn Iterator<Item = i32>> = if delta_y > 0.0 {
+                Box::new(y_start..=y_end)
+            } else {
+                Box::new((y_end..=y_start).rev())
+            };
+
+            for y in range {
+                self.draw_pixel(Vector2(x as f64, y as f64), color);
+                err += slope;
+                if err >= 1.0 {
+                    err -= 1.0;
+                    x += x_step;
+                }
+            }
+        }
+
     }
 }
