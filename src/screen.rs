@@ -7,6 +7,8 @@ const WINDOW_WIDTH: u32 = 512;
 const WINDOW_HEIGHT: u32 = 512;
 const BACKGROUND_COLOR: Color = Color::BLACK;
 const PIXEL_SIZE: u32 = 4;
+pub const SCREEN_HEIGHT: u32= WINDOW_HEIGHT / PIXEL_SIZE;
+pub const SCREEN_WIDTH: u32= WINDOW_WIDTH / PIXEL_SIZE;
 
 pub struct Screen {
     ctx: sdl2::Sdl,
@@ -46,6 +48,8 @@ impl Screen {
 
     pub fn draw_pixel(&mut self, pos: Vector2, color: Color) {
         let scale = PIXEL_SIZE as i32;
+        let mut pos = pos.clone();
+        pos.wrap();
         let pos = pos.as_i32();
         let pixel = Rect::new(pos.0 * scale, pos.1 * scale, PIXEL_SIZE, PIXEL_SIZE);
         self.canvas.set_draw_color(color);
