@@ -59,7 +59,7 @@ impl Screen {
     }
 
     pub fn draw_line(&mut self, start: Vector2, end: Vector2, color: Color) {
-        let Vector2(delta_x, delta_y) = end - start;
+        let Vector2{ x: delta_x, y: delta_y } = end - start;
         let (x_end, y_end) = end.as_i32();
         let mut err = 0.5;
         
@@ -76,7 +76,7 @@ impl Screen {
                 Box::new((x_end..=x_start).rev())
             };
             for x in range {
-                self.draw_pixel(Vector2(x as f64, y as f64), color);
+                self.draw_pixel(Vector2::new(x as f64, y as f64), color);
                 err += slope;
                 if err >= 1.0 {
                     err -= 1.0;
@@ -98,7 +98,7 @@ impl Screen {
             };
 
             for y in range {
-                self.draw_pixel(Vector2(x as f64, y as f64), color);
+                self.draw_pixel(Vector2::new(x as f64, y as f64), color);
                 err += slope;
                 if err >= 1.0 {
                     err -= 1.0;
