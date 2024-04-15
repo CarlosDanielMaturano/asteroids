@@ -1,6 +1,6 @@
-use crate::utils::Vector2;
 use sdl2::pixels::Color;
 use sdl2::rect::Rect;
+use crate::utils::vector2::Vector2;
 
 const WINDOW_TITLE: &str = "Asteroids";
 const WINDOW_WIDTH: u32 = 512;
