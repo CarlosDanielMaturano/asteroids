@@ -27,7 +27,7 @@ impl GameLogic {
                     _ => (),
                 }
             }
-            let key_handle =  KeyHandle::new(events);
+            let key_handle = KeyHandle::new(events);
             self.screen.clear();
 
             let current_time = Instant::now();

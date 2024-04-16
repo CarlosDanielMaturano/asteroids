@@ -6,4 +6,5 @@ pub struct SpaceObject {
     pub dir: Vector2,
     pub angle: f64,
     pub size: usize,
+    pub model: Box<[Vector2]>,
 }

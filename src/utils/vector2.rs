@@ -4,8 +4,8 @@ use std::ops::{Add, AddAssign, Div, Mul, Sub, SubAssign};
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Vector2 {
-   pub x: f64,
-   pub y: f64,
+    pub x: f64,
+    pub y: f64,
 }
 
 impl Vector2 {
@@ -18,14 +18,14 @@ impl Vector2 {
     pub fn wrap(&mut self) {
         let w = SCREEN_WIDTH as f64;
         let h = SCREEN_HEIGHT as f64;
-        if self.x >= w  {
+        if self.x >= w {
             self.x = self.x - w;
         }
         if self.x < 0.0 {
             self.x = w + self.x
         }
 
-        if self.y > h  {
+        if self.y > h {
             self.y = self.y - h;
         }
         if self.y < 0.0 {
@@ -39,14 +39,14 @@ impl Add for Vector2 {
     fn add(self, rhs: Self) -> Self::Output {
         Vector2 {
             x: self.x + rhs.x,
-            y: self.y + rhs.y
+            y: self.y + rhs.y,
         }
     }
 }
 
-impl AddAssign for Vector2{
+impl AddAssign for Vector2 {
     fn add_assign(&mut self, rhs: Self) {
-        self.x+= rhs.x;
+        self.x += rhs.x;
         self.y += rhs.y;
     }
 }
@@ -56,13 +56,12 @@ impl Sub for Vector2 {
     fn sub(self, rhs: Self) -> Self::Output {
         Vector2 {
             x: self.x - rhs.x,
-            y: self.y - rhs.y
+            y: self.y - rhs.y,
         }
-
     }
 }
 
-impl SubAssign for Vector2{
+impl SubAssign for Vector2 {
     fn sub_assign(&mut self, rhs: Self) {
         self.x -= rhs.x;
         self.y -= rhs.y;
@@ -74,7 +73,7 @@ impl Mul<Vector2> for Vector2 {
     fn mul(self, rhs: Self) -> Self::Output {
         Vector2 {
             x: self.x * rhs.x,
-            y: self.y * rhs.y
+            y: self.y * rhs.y,
         }
     }
 }
@@ -84,7 +83,7 @@ impl Mul<f64> for Vector2 {
     fn mul(self, rhs: f64) -> Self::Output {
         Vector2 {
             x: self.x * rhs,
-            y: self.y * rhs
+            y: self.y * rhs,
         }
     }
 }
@@ -94,7 +93,7 @@ impl Div for Vector2 {
     fn div(self, rhs: Self) -> Self::Output {
         Vector2 {
             x: self.x * rhs.x,
-            y: self.y * rhs.y
+            y: self.y * rhs.y,
         }
     }
 }
