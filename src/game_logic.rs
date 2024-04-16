@@ -1,10 +1,8 @@
 use crate::screen::Screen;
-use std::time::Duration;
-use sdl2::EventPump;
+use crate::utils::key::KeyHandle;
 use std::time::Instant;
 
 const FPS_TARGET: u32 = 30;
-const ONE_SECOND: u32 = Duration::from_secs(1).as_nanos() as u32;
 
 pub struct GameLogic {
     screen: Screen,
@@ -18,7 +16,7 @@ impl GameLogic {
     }
     pub fn run<T>(&mut self, mut logic: T)
     where
-        T: FnMut(&mut Screen, &EventPump, f64),
+        T: FnMut(&mut Screen, KeyHandle, f64),
     {
         let mut last_time = Instant::now();
         'gameloop: loop {
@@ -29,13 +27,14 @@ impl GameLogic {
                     _ => (),
                 }
             }
+            let key_handle =  KeyHandle::new(events);
             self.screen.clear();
 
             let current_time = Instant::now();
             let delta_time = current_time.duration_since(last_time) * FPS_TARGET;
             last_time = current_time;
 
-            logic(&mut self.screen, &events, delta_time.as_secs_f64());
+            logic(&mut self.screen, key_handle, delta_time.as_secs_f64());
 
             self.screen.present();
         }
