@@ -11,11 +11,11 @@ fn main() {
     let mut logic = GameLogic::new();
 
     let ship_model: [Vector2; 5] = [
-        Vector2::new(6.0, -4.0),
-        Vector2::new(2.0, 6.0),
-        Vector2::new(5.0, 4.0),
-        Vector2::new(7.0, 4.0),
-        Vector2::new(10.0, 6.0),
+        Vector2::new(0.0, -7.0), 
+        Vector2::new(-4.0, 3.0), 
+        Vector2::new(-2.0, 1.0), 
+        Vector2::new(2.0, 1.0),  
+        Vector2::new(4.0, 3.0),  
     ];
 
     let mut player = SpaceObject {
@@ -27,7 +27,6 @@ fn main() {
     };
 
     logic.run(move |screen, keys, dt| {
-        screen.draw_wire_frame_model(&player, &ship_model, Color::WHITE);
         if keys[Scancode::W] {
             player.dir.x += player.angle.sin() * 0.05 * dt;
             player.dir.y -= player.angle.cos() * 0.05 * dt;
@@ -42,5 +41,7 @@ fn main() {
 
         player.pos += player.dir * dt;
         player.pos.wrap();
+
+        screen.draw_wire_frame_model(&player, &ship_model, Color::GREEN);
     });
 }

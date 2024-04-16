@@ -4,8 +4,8 @@ use sdl2::pixels::Color;
 use sdl2::rect::Rect;
 
 const WINDOW_TITLE: &str = "Asteroids";
-const WINDOW_WIDTH: u32 = 512;
-const WINDOW_HEIGHT: u32 = 512;
+const WINDOW_WIDTH: u32 = 640;
+const WINDOW_HEIGHT: u32 = 640;
 const BACKGROUND_COLOR: Color = Color::BLACK;
 const PIXEL_SIZE: u32 = 4;
 pub const SCREEN_HEIGHT: u32 = WINDOW_HEIGHT / PIXEL_SIZE;
@@ -114,15 +114,16 @@ impl Screen {
 
     pub fn draw_wire_frame_model(&mut self, object: &SpaceObject, original_model: &[Vector2], color: Color) {
         let mut model = original_model.to_owned();
-        for (i, model) in model.iter_mut().enumerate() {
+        let cos = object.angle.cos();
+        let sin = object.angle.sin();
+        for point in model.iter_mut() {
             // rotate
-            let point = original_model[i];
-            *model = Vector2::new(
-                point.x * object.angle.cos() - point.y * object.angle.sin(),
-                point.x * object.angle.sin() + point.y * object.angle.cos(),
+            *point = Vector2::new(
+                point.x * cos - point.y * sin,
+                point.x * sin + point.y * cos,
             );
             // translate
-            *model += object.pos
+            *point += object.pos;
         }
 
         let size = model.len();
