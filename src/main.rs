@@ -22,14 +22,31 @@ fn spawn_asteroid(asteroid_radius: f64, pos: Vector2) -> SpaceObject {
         *point = Vector2::new(radius * a.sin(), radius * a.cos());
     }
 
+    let mut rng = rand::thread_rng();
+    let dir = Vector2::new(
+        random::<f64>() * 0.5f64,
+        random::<f64>() * 0.5f64
+    ) * Vector2::new(
+        *[ -1f64, 1f64 ].choose(&mut rng).unwrap(),
+        *[ -1f64, 1f64 ].choose(&mut rng).unwrap(),
+    );
     let asteroid = SpaceObject {
         pos,
-        dir: Vector2::new(random::<f64>() * 0.5f64, random::<f64>() * 0.5f64),
+        dir,
         angle: random::<f64>() * 10f64,
         radius: asteroid_radius as usize,
         model: Box::new(asteroid_model),
     };
     asteroid
+}
+
+fn spawn_random_asteroids() -> Vec<SpaceObject> {
+    let mut asteroids: Vec<SpaceObject> = Vec::new();
+    for _ in 0..3 {
+        let random_pos = Vector2::new(random::<f64>() * 512f64, random::<f64>() * 512_f64);
+        asteroids.push(spawn_asteroid(DEFAULT_ASTEROID_SIZE, random_pos));
+    }
+    asteroids
 }
 
 fn spawn_bullet(origin: &SpaceObject) -> SpaceObject {
@@ -72,11 +89,8 @@ fn main() {
 
     let mut is_player_shooting = false;
 
-    let mut asteroids: Vec<SpaceObject> = Vec::new();
-    for _ in 0..3 {
-        let random_pos = Vector2::new(random::<f64>() * 512f64, random::<f64>() * 512_f64);
-        asteroids.push(spawn_asteroid(DEFAULT_ASTEROID_SIZE, random_pos));
-    }
+    let mut asteroids = spawn_random_asteroids();
+
 
     logic.run(move |screen, keys, dt| {
         if keys[Scancode::W] {
@@ -131,6 +145,10 @@ fn main() {
                 asteroids.push(spawn_asteroid(radius / 2f64, *pos))
             }
         });
+
+        if asteroids.is_empty() {
+            asteroids = spawn_random_asteroids();
+        }
 
         asteroids.iter_mut().for_each(|asteroid| {
             asteroid.angle += 0.05f64 * dt;
