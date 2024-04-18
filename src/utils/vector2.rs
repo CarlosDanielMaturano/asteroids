@@ -13,7 +13,7 @@ impl Vector2 {
         Self { x, y }
     }
     pub fn empty() -> Self {
-        Self { x: 0.0, y: 0.0 }
+        Self { x: 0f64, y: 0f64 }
     }
     pub fn as_i32(&self) -> (i32, i32) {
         (self.x as i32, self.y as i32)

@@ -75,15 +75,15 @@ fn main() {
 
     // Player
     let ship_model: [Vector2; 5] = [
-        Vector2::new(0.0, -7.0),
-        Vector2::new(-4.0, 3.0),
-        Vector2::new(-2.0, 1.0),
-        Vector2::new(2.0, 1.0),
-        Vector2::new(4.0, 3.0),
+        Vector2::new(0f64, -7f64),
+        Vector2::new(-4f64, 3f64),
+        Vector2::new(-2f64, 1f64),
+        Vector2::new(2f64, 1f64),
+        Vector2::new(4f64, 3f64),
     ];
     let mut player = SpaceObject {
         pos: Vector2::new(SCREEN_WIDTH as f64/ 2f64, SCREEN_HEIGHT as f64 / 2f64),
-        dir: Vector2::new(0.0, 0.0),
+        dir: Vector2::empty(),
         angle: 0f64,
         radius: 0,
         model: Box::new(ship_model),
@@ -98,9 +98,9 @@ fn main() {
 
     logic.run(move |screen, keys, dt| {
         if keys[Scancode::W] || keys[Scancode::Up] {
-            player.dir.x += player.angle.sin() * 0.06 * dt;
-            player.dir.y -= player.angle.cos() * 0.06 * dt;
-            let max_vel = 1.2_f64;
+            player.dir.x += player.angle.sin() * 0.06f64 * dt;
+            player.dir.y -= player.angle.cos() * 0.06f64 * dt;
+            let max_vel = 1.2f64;
             if player.dir.x.abs() >= max_vel {
                 player.dir.x = (player.dir.x/player.dir.x.abs()) * max_vel 
             }
@@ -110,10 +110,10 @@ fn main() {
         }
 
         if keys[Scancode::D] || keys[Scancode::Right] {
-            player.angle += 0.1 * dt
+            player.angle += 0.1f64 * dt
         }
         if keys[Scancode::A] || keys[Scancode::Left] {
-            player.angle -= 0.1 * dt
+            player.angle -= 0.1f64 * dt
         }
         if keys[Scancode::Space] {
             if !is_player_shooting {
@@ -144,7 +144,7 @@ fn main() {
             for bullet in player_bullets.iter_mut() {
                 let radius = asteroid.radius as f64;
                 if is_point_inside_circle(&asteroid.pos, radius, &bullet.pos){
-                    bullet.pos.x = -100.0;
+                    bullet.pos.x = -100f64;
                     dead_asteroid.push((asteroid.pos, radius));
                     return false
                 }
@@ -168,7 +168,6 @@ fn main() {
             asteroid.pos.wrap();
             screen.draw_wire_frame_model(&asteroid, Color::YELLOW);
         });
-
 
 
         player.pos += player.dir * dt;

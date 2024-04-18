@@ -65,16 +65,16 @@ impl Screen {
             y: delta_y,
         } = end - start;
         let (x_end, y_end) = end.as_i32();
-        let mut err = 0.5;
+        let mut err = 0.5f64;
 
         if delta_x.abs() > delta_y.abs() {
-            let y_step = if delta_y < 0.0 { -1 } else { 1 };
+            let y_step = if delta_y < 0f64 { -1 } else { 1 };
             let mut slope = delta_y.abs() / delta_x.abs();
             if slope.is_nan() {
-                slope = 0.0;
+                slope = 0f64;
             }
             let (x_start, mut y) = start.as_i32();
-            let range: Box<dyn Iterator<Item = i32>> = if delta_x > 0.0 {
+            let range: Box<dyn Iterator<Item = i32>> = if delta_x > 0f64 {
                 Box::new(x_start..=x_end)
             } else {
                 Box::new((x_end..=x_start).rev())
@@ -82,20 +82,20 @@ impl Screen {
             for x in range {
                 self.draw_pixel(Vector2::new(x as f64, y as f64), color);
                 err += slope;
-                if err >= 1.0 {
-                    err -= 1.0;
+                if err >= 1f64 {
+                    err -= 1f64;
                     y += y_step;
                 }
             }
         } else {
-            let x_step = if delta_x < 0.0 { -1 } else { 1 };
+            let x_step = if delta_x < 0f64 { -1 } else { 1 };
             let mut slope = delta_x.abs() / delta_y.abs();
             if slope.is_nan() {
-                slope = 0.0
+                slope = 0f64
             }
 
             let (mut x, y_start) = start.as_i32();
-            let range: Box<dyn Iterator<Item = i32>> = if delta_y > 0.0 {
+            let range: Box<dyn Iterator<Item = i32>> = if delta_y > 0f64 {
                 Box::new(y_start..=y_end)
             } else {
                 Box::new((y_end..=y_start).rev())
@@ -104,8 +104,8 @@ impl Screen {
             for y in range {
                 self.draw_pixel(Vector2::new(x as f64, y as f64), color);
                 err += slope;
-                if err >= 1.0 {
-                    err -= 1.0;
+                if err >= 1f64{
+                    err -= 1f64;
                     x += x_step;
                 }
             }

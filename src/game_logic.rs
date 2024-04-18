@@ -2,7 +2,7 @@ use crate::screen::Screen;
 use crate::utils::key::KeyHandle;
 use std::time::Instant;
 
-const FPS_TARGET: u32 = 30;
+const FPS_TARGET: u32 = 24;
 
 pub struct GameLogic {
     screen: Screen,
