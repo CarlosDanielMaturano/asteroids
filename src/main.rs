@@ -139,6 +139,9 @@ fn main() {
             true
         });
 
+        player.pos += player.dir * dt;
+        player.pos.wrap();
+
         let mut dead_asteroid: Vec<(Vector2, f32)> = Vec::new();
         asteroids.retain(|asteroid| {
             for bullet in player_bullets.iter_mut() {
@@ -180,9 +183,6 @@ fn main() {
             asteroid.pos.wrap();
             screen.draw_wire_frame_model(&asteroid, Color::YELLOW);
         }
-
-        player.pos += player.dir * dt;
-        player.pos.wrap();
 
         screen.draw_wire_frame_model(&player, Color::WHITE);
         screen.draw_score(player_score, Color::WHITE);
