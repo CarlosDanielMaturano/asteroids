@@ -4,23 +4,23 @@ use std::ops::{Add, AddAssign, Div, Mul, Sub, SubAssign};
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Vector2 {
-    pub x: f64,
-    pub y: f64,
+    pub x: f32,
+    pub y: f32,
 }
 
 impl Vector2 {
-    pub fn new(x: f64, y: f64) -> Self {
+    pub fn new(x: f32, y: f32) -> Self {
         Self { x, y }
     }
     pub fn empty() -> Self {
-        Self { x: 0f64, y: 0f64 }
+        Self { x: 0f32, y: 0f32 }
     }
     pub fn as_i32(&self) -> (i32, i32) {
         (self.x as i32, self.y as i32)
     }
     pub fn wrap(&mut self) {
-        let w = SCREEN_WIDTH as f64;
-        let h = SCREEN_HEIGHT as f64;
+        let w = SCREEN_WIDTH as f32;
+        let h = SCREEN_HEIGHT as f32;
         if self.x >= w {
             self.x = self.x - w;
         }
@@ -81,9 +81,9 @@ impl Mul<Vector2> for Vector2 {
     }
 }
 
-impl Mul<f64> for Vector2 {
+impl Mul<f32> for Vector2 {
     type Output = Self;
-    fn mul(self, rhs: f64) -> Self::Output {
+    fn mul(self, rhs: f32) -> Self::Output {
         Vector2 {
             x: self.x * rhs,
             y: self.y * rhs,

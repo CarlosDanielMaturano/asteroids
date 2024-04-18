@@ -65,48 +65,48 @@ impl Screen {
             y: delta_y,
         } = end - start;
         let (x_end, y_end) = end.as_i32();
-        let mut err = 0.5f64;
+        let mut err = 0.5f32;
 
         if delta_x.abs() > delta_y.abs() {
-            let y_step = if delta_y < 0f64 { -1 } else { 1 };
+            let y_step = if delta_y < 0f32 { -1 } else { 1 };
             let mut slope = delta_y.abs() / delta_x.abs();
             if slope.is_nan() {
-                slope = 0f64;
+                slope = 0f32;
             }
             let (x_start, mut y) = start.as_i32();
-            let range: Box<dyn Iterator<Item = i32>> = if delta_x > 0f64 {
+            let range: Box<dyn Iterator<Item = i32>> = if delta_x > 0f32 {
                 Box::new(x_start..=x_end)
             } else {
                 Box::new((x_end..=x_start).rev())
             };
             for x in range {
-                self.draw_pixel(Vector2::new(x as f64, y as f64), PIXEL_SIZE, color);
+                self.draw_pixel(Vector2::new(x as f32, y as f32), PIXEL_SIZE, color);
 
                 err += slope;
-                if err >= 1f64 {
-                    err -= 1f64;
+                if err >= 1f32 {
+                    err -= 1f32;
                     y += y_step;
                 }
             }
         } else {
-            let x_step = if delta_x < 0f64 { -1 } else { 1 };
+            let x_step = if delta_x < 0f32 { -1 } else { 1 };
             let mut slope = delta_x.abs() / delta_y.abs();
             if slope.is_nan() {
-                slope = 0f64
+                slope = 0f32
             }
 
             let (mut x, y_start) = start.as_i32();
-            let range: Box<dyn Iterator<Item = i32>> = if delta_y > 0f64 {
+            let range: Box<dyn Iterator<Item = i32>> = if delta_y > 0f32 {
                 Box::new(y_start..=y_end)
             } else {
                 Box::new((y_end..=y_start).rev())
             };
 
             for y in range {
-                self.draw_pixel(Vector2::new(x as f64, y as f64), PIXEL_SIZE, color);
+                self.draw_pixel(Vector2::new(x as f32, y as f32), PIXEL_SIZE, color);
                 err += slope;
-                if err >= 1f64 {
-                    err -= 1f64;
+                if err >= 1f32 {
+                    err -= 1f32;
                     x += x_step;
                 }
             }
@@ -139,8 +139,8 @@ impl Screen {
             .collect();
         let x_space = font::FONT_WIDHT + 3;
         let y_space = font::FONT_HEIGHT + 3;
-        let initial_pos = Vector2::new(10f64, 0f64);
-        let space = Vector2::new(x_space as f64, y_space as f64);
+        let initial_pos = Vector2::new(10f32, 0f32);
+        let space = Vector2::new(x_space as f32, y_space as f32);
         for (i, digit) in digits.iter().enumerate() {
             let digit_font_char = font::DIGITS_FONTS[*digit];
             for (y, row) in digit_font_char.iter().enumerate() {
@@ -149,9 +149,9 @@ impl Screen {
                         continue;
                     }
                     let mut offset = space;
-                    offset.x *= i as f64;
+                    offset.x *= i as f32;
                     self.draw_pixel(
-                        initial_pos + Vector2::new(x as f64, y as f64) + offset,
+                        initial_pos + Vector2::new(x as f32, y as f32) + offset,
                         2i32,
                         color,
                     )

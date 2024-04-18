@@ -16,7 +16,7 @@ impl GameLogic {
     }
     pub fn run<T>(&mut self, mut logic: T)
     where
-        T: FnMut(&mut Screen, KeyHandle, f64),
+        T: FnMut(&mut Screen, KeyHandle, f32),
     {
         let mut last_time = Instant::now();
         'gameloop: loop {
@@ -34,7 +34,7 @@ impl GameLogic {
             let delta_time = current_time.duration_since(last_time) * FPS_TARGET;
             last_time = current_time;
 
-            logic(&mut self.screen, key_handle, delta_time.as_secs_f64());
+            logic(&mut self.screen, key_handle, delta_time.as_secs_f32());
 
             self.screen.present();
         }
