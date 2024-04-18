@@ -52,7 +52,12 @@ impl Screen {
         let mut pos = pos.clone();
         pos.wrap();
         let pos = pos.as_i32();
-        let pixel = Rect::new(pos.0 * scale, pos.1 * scale, PIXEL_SIZE as u32, PIXEL_SIZE as u32);
+        let pixel = Rect::new(
+            pos.0 * scale,
+            pos.1 * scale,
+            PIXEL_SIZE as u32,
+            PIXEL_SIZE as u32,
+        );
         self.canvas.set_draw_color(color);
         if let Err(err) = self.canvas.fill_rect(pixel) {
             panic!("Unexpected error while drawing: {err}")

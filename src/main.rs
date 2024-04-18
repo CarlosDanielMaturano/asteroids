@@ -70,10 +70,7 @@ fn is_point_inside_circle(cicle_pos: &Vector2, circle_radius: f32, point: &Vecto
     ((x - cx).powf(2f32) + (y - cy).powf(2f32)).sqrt() < circle_radius
 }
 
-fn main() {
-    let mut logic = GameLogic::new();
-
-    // Player
+pub fn create_player() -> SpaceObject {
     let ship_model: [Vector2; 5] = [
         Vector2::new(0f32, -7f32),
         Vector2::new(-4f32, 3f32),
@@ -81,21 +78,24 @@ fn main() {
         Vector2::new(2f32, 1f32),
         Vector2::new(4f32, 3f32),
     ];
-    let mut player = SpaceObject {
+    SpaceObject {
         pos: Vector2::new(SCREEN_WIDTH as f32 / 2f32, SCREEN_HEIGHT as f32 / 2f32),
         dir: Vector2::empty(),
         angle: 0f32,
-        radius: 0,
+        radius: 10,
         model: Box::new(ship_model),
-    };
+    }
+}
 
+fn main() {
+    let mut logic = GameLogic::new();
+
+    let mut player = create_player();
     let mut player_bullets: Vec<SpaceObject> = Vec::new();
-
     let mut is_player_shooting = false;
+    let mut player_score: usize = 0;
 
     let mut asteroids = spawn_random_asteroids(player.angle);
-
-    let mut player_score: usize = 0;
 
     logic.run(move |screen, keys, dt| {
         if keys[Scancode::W] || keys[Scancode::Up] {
@@ -117,7 +117,7 @@ fn main() {
             player.angle -= 0.1f32 * dt
         }
         if keys[Scancode::Space] {
-            if !is_player_shooting  && player_bullets.len() <= 5 {
+            if !is_player_shooting && player_bullets.len() <= 5 {
                 player_bullets.push(spawn_bullet(&player));
             }
             is_player_shooting = true;
@@ -164,12 +164,22 @@ fn main() {
             player_score += 1000;
         }
 
-        asteroids.iter_mut().for_each(|asteroid| {
+        for asteroid in asteroids.iter_mut() {
+            let radius = (asteroid.radius + player.radius) as f32;
+            if is_point_inside_circle(&asteroid.pos, radius, &player.pos) {
+                player = create_player();
+                player_bullets = Vec::new();
+                is_player_shooting = false;
+                player_score = 0;
+                asteroids = spawn_random_asteroids(player.angle);
+                return;
+            }
+
             asteroid.angle += 0.05f32 * dt;
             asteroid.pos += asteroid.dir * dt;
             asteroid.pos.wrap();
             screen.draw_wire_frame_model(&asteroid, Color::YELLOW);
-        });
+        }
 
         player.pos += player.dir * dt;
         player.pos.wrap();
