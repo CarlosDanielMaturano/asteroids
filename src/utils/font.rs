@@ -1,6 +1,6 @@
 pub const FONT_WIDHT: usize = 7;
 pub const FONT_HEIGHT: usize = 11;
-type Font = [[u8; FONT_WIDHT]; FONT_HEIGHT];
+type Font = [[usize; FONT_WIDHT]; FONT_HEIGHT];
 
 pub const ZERO: Font = [
     [1, 1, 1, 1, 1, 1, 1],
