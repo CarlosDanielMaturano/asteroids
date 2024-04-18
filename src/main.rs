@@ -24,8 +24,8 @@ fn spawn_asteroid(asteroid_radius: f64, pos: Vector2) -> SpaceObject {
 
     let mut rng = rand::thread_rng();
     let dir = Vector2::new(
-        random::<f64>() * 0.5f64,
-        random::<f64>() * 0.5f64
+        random::<f64>() * 0.3f64 * (DEFAULT_ASTEROID_SIZE / (asteroid_radius + 0.5f64)),
+        random::<f64>() * 0.3f64 * (DEFAULT_ASTEROID_SIZE / (asteroid_radius + 0.5f64)),
     ) * Vector2::new(
         *[ -1f64, 1f64 ].choose(&mut rng).unwrap(),
         *[ -1f64, 1f64 ].choose(&mut rng).unwrap(),
@@ -93,16 +93,23 @@ fn main() {
 
 
     logic.run(move |screen, keys, dt| {
-        if keys[Scancode::W] {
-            player.dir.x += player.angle.sin() * 0.05 * dt;
-            player.dir.y -= player.angle.cos() * 0.05 * dt;
+        if keys[Scancode::W] || keys[Scancode::Up] {
+            player.dir.x += player.angle.sin() * 0.06 * dt;
+            player.dir.y -= player.angle.cos() * 0.06 * dt;
+            let max_vel = 1.2_f64;
+            if player.dir.x.abs() >= max_vel {
+                player.dir.x = (player.dir.x/player.dir.x.abs()) * max_vel 
+            }
+            if player.dir.y.abs() >= max_vel {
+                player.dir.y = (player.dir.y/player.dir.y.abs()) * max_vel
+            }
         }
 
-        if keys[Scancode::D] {
-            player.angle += 0.07 * dt
+        if keys[Scancode::D] || keys[Scancode::Right] {
+            player.angle += 0.1 * dt
         }
-        if keys[Scancode::A] {
-            player.angle -= 0.07 * dt
+        if keys[Scancode::A] || keys[Scancode::Left] {
+            player.angle -= 0.1 * dt
         }
         if keys[Scancode::Space] {
             if !is_player_shooting {
@@ -162,6 +169,6 @@ fn main() {
         player.pos += player.dir * dt;
         player.pos.wrap();
 
-        screen.draw_wire_frame_model(&player, Color::GREEN);
+        screen.draw_wire_frame_model(&player, Color::WHITE);
     });
 }

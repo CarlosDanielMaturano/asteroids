@@ -4,8 +4,8 @@ use sdl2::pixels::Color;
 use sdl2::rect::Rect;
 
 const WINDOW_TITLE: &str = "Asteroids";
-const WINDOW_WIDTH: u32 = 720;
-const WINDOW_HEIGHT: u32 = 720;
+const WINDOW_WIDTH: u32 = 800;
+const WINDOW_HEIGHT: u32 = 640;
 const BACKGROUND_COLOR: Color = Color::BLACK;
 const PIXEL_SIZE: u32 = 4;
 pub const SCREEN_HEIGHT: u32 = WINDOW_HEIGHT / PIXEL_SIZE;
