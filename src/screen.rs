@@ -1,3 +1,4 @@
+use crate::utils::font;
 use crate::utils::space_object::SpaceObject;
 use crate::utils::vector2::Vector2;
 use sdl2::pixels::Color;
@@ -59,6 +60,18 @@ impl Screen {
         };
     }
 
+    pub fn draw_font_pixel(&mut self, pos: Vector2, color: Color) {
+        let scale = 2i32;
+        let mut pos = pos.clone();
+        pos.wrap();
+        let pos = pos.as_i32();
+        let pixel = Rect::new(pos.0 * scale, pos.1 * scale, PIXEL_SIZE, PIXEL_SIZE);
+        self.canvas.set_draw_color(color);
+        if let Err(err) = self.canvas.fill_rect(pixel) {
+            panic!("Unexpected error while drawing: {err}")
+        };
+    }
+
     pub fn draw_line(&mut self, start: Vector2, end: Vector2, color: Color) {
         let Vector2 {
             x: delta_x,
@@ -104,7 +117,7 @@ impl Screen {
             for y in range {
                 self.draw_pixel(Vector2::new(x as f64, y as f64), color);
                 err += slope;
-                if err >= 1f64{
+                if err >= 1f64 {
                     err -= 1f64;
                     x += x_step;
                 }
@@ -127,6 +140,34 @@ impl Screen {
         for i in 0..=size {
             let j = i + 1;
             self.draw_line(model[i % size], model[j % size], color)
+        }
+    }
+
+    pub fn draw_score(&mut self, score: usize, color: Color) {
+        let digits: Vec<usize> = score
+            .to_string()
+            .chars()
+            .map(|d| d.to_digit(10).unwrap() as usize)
+            .collect();
+        let x_space = font::FONT_WIDHT + 3;
+        let y_space = font::FONT_HEIGHT + 3;
+        let initial_pos = Vector2::new(10f64, 0f64);
+        let space = Vector2::new(x_space as f64, y_space as f64);
+        for (i, digit) in digits.iter().enumerate() {
+            let digit_font_char = font::DIGITS_FONTS[*digit];
+            for (y, row) in digit_font_char.iter().enumerate() {
+                for (x, pixel) in row.iter().enumerate() {
+                    if *pixel == 0 {
+                        continue;
+                    }
+                    let mut offset = space;
+                    offset.x *= i as f64;
+                    self.draw_font_pixel(
+                        initial_pos + Vector2::new(x as f64, y as f64) + offset,
+                        color,
+                    )
+                }
+            }
         }
     }
 }

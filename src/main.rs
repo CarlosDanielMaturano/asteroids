@@ -12,7 +12,7 @@ use sdl2::pixels::Color;
 use std::f64::consts::PI;
 
 const VERTS: usize = 20;
-const DEFAULT_ASTEROID_SIZE: f64  = 24f64;
+const DEFAULT_ASTEROID_SIZE: f64 = 24f64;
 const ASTEROID_SPAWN_COUNT: usize = 2;
 
 fn spawn_asteroid(asteroid_radius: f64, pos: Vector2) -> SpaceObject {
@@ -28,8 +28,8 @@ fn spawn_asteroid(asteroid_radius: f64, pos: Vector2) -> SpaceObject {
         random::<f64>() * 0.3f64 * (DEFAULT_ASTEROID_SIZE / (asteroid_radius + 0.5f64)),
         random::<f64>() * 0.3f64 * (DEFAULT_ASTEROID_SIZE / (asteroid_radius + 0.5f64)),
     ) * Vector2::new(
-        *[ -1f64, 1f64 ].choose(&mut rng).unwrap(),
-        *[ -1f64, 1f64 ].choose(&mut rng).unwrap(),
+        *[-1f64, 1f64].choose(&mut rng).unwrap(),
+        *[-1f64, 1f64].choose(&mut rng).unwrap(),
     );
     let asteroid = SpaceObject {
         pos,
@@ -45,8 +45,8 @@ fn spawn_random_asteroids(player_angle: f64) -> Vec<SpaceObject> {
     let mut asteroids: Vec<SpaceObject> = Vec::new();
     for _ in 0..ASTEROID_SPAWN_COUNT {
         let random_pos = Vector2::new(
-            random::<f64>() * 512_f64 * player_angle.cos(), 
-            random::<f64>() * 512_f64 * -player_angle.sin()
+            random::<f64>() * 512_f64 * player_angle.cos(),
+            random::<f64>() * 512_f64 * -player_angle.sin(),
         );
         asteroids.push(spawn_asteroid(DEFAULT_ASTEROID_SIZE, random_pos));
     }
@@ -60,7 +60,7 @@ fn spawn_bullet(origin: &SpaceObject) -> SpaceObject {
         dir: Vector2::new(5f64 * angle.sin(), -5f64 * angle.cos()),
         angle: origin.angle,
         model: Box::new([]),
-        radius: 0
+        radius: 0,
     }
 }
 
@@ -82,19 +82,20 @@ fn main() {
         Vector2::new(4f64, 3f64),
     ];
     let mut player = SpaceObject {
-        pos: Vector2::new(SCREEN_WIDTH as f64/ 2f64, SCREEN_HEIGHT as f64 / 2f64),
+        pos: Vector2::new(SCREEN_WIDTH as f64 / 2f64, SCREEN_HEIGHT as f64 / 2f64),
         dir: Vector2::empty(),
         angle: 0f64,
         radius: 0,
         model: Box::new(ship_model),
     };
-    
+
     let mut player_bullets: Vec<SpaceObject> = Vec::new();
 
     let mut is_player_shooting = false;
 
     let mut asteroids = spawn_random_asteroids(player.angle);
 
+    let mut player_score: usize = 0;
 
     logic.run(move |screen, keys, dt| {
         if keys[Scancode::W] || keys[Scancode::Up] {
@@ -102,10 +103,10 @@ fn main() {
             player.dir.y -= player.angle.cos() * 0.06f64 * dt;
             let max_vel = 1.2f64;
             if player.dir.x.abs() >= max_vel {
-                player.dir.x = (player.dir.x/player.dir.x.abs()) * max_vel 
+                player.dir.x = (player.dir.x / player.dir.x.abs()) * max_vel
             }
             if player.dir.y.abs() >= max_vel {
-                player.dir.y = (player.dir.y/player.dir.y.abs()) * max_vel
+                player.dir.y = (player.dir.y / player.dir.y.abs()) * max_vel
             }
         }
 
@@ -116,7 +117,7 @@ fn main() {
             player.angle -= 0.1f64 * dt
         }
         if keys[Scancode::Space] {
-            if !is_player_shooting {
+            if !is_player_shooting  && player_bullets.len() <= 5 {
                 player_bullets.push(spawn_bullet(&player));
             }
             is_player_shooting = true;
@@ -124,29 +125,29 @@ fn main() {
             is_player_shooting = false;
         }
 
-
         player_bullets.iter_mut().for_each(|bullet| {
             bullet.pos += bullet.dir * dt;
             screen.draw_pixel(bullet.pos, Color::WHITE)
         });
 
         player_bullets.retain_mut(|bullet| {
-            let ( x, y ) = bullet.pos.as_i32();
-            if x < 1 || x > SCREEN_WIDTH as i32 || y < 1 || y > SCREEN_HEIGHT as i32{
-                return false
+            let (x, y) = bullet.pos.as_i32();
+            if x < 1 || x > SCREEN_WIDTH as i32 || y < 1 || y > SCREEN_HEIGHT as i32 {
+                return false;
             }
             bullet.pos.wrap();
-            true 
+            true
         });
 
         let mut dead_asteroid: Vec<(Vector2, f64)> = Vec::new();
         asteroids.retain(|asteroid| {
             for bullet in player_bullets.iter_mut() {
                 let radius = asteroid.radius as f64;
-                if is_point_inside_circle(&asteroid.pos, radius, &bullet.pos){
+                if is_point_inside_circle(&asteroid.pos, radius, &bullet.pos) {
                     bullet.pos.x = -100f64;
+                    player_score += 100 / asteroid.radius;
                     dead_asteroid.push((asteroid.pos, radius));
-                    return false
+                    return false;
                 }
             }
             !(asteroid.radius < 6)
@@ -160,6 +161,7 @@ fn main() {
 
         if asteroids.is_empty() {
             asteroids = spawn_random_asteroids(player.angle);
+            player_score += 1000;
         }
 
         asteroids.iter_mut().for_each(|asteroid| {
@@ -169,10 +171,10 @@ fn main() {
             screen.draw_wire_frame_model(&asteroid, Color::YELLOW);
         });
 
-
         player.pos += player.dir * dt;
         player.pos.wrap();
 
         screen.draw_wire_frame_model(&player, Color::WHITE);
+        screen.draw_score(player_score, Color::WHITE);
     });
 }
