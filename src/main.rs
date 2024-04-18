@@ -13,6 +13,7 @@ use std::f64::consts::PI;
 
 const VERTS: usize = 20;
 const DEFAULT_ASTEROID_SIZE: f64  = 24f64;
+const ASTEROID_SPAWN_COUNT: usize = 2;
 
 fn spawn_asteroid(asteroid_radius: f64, pos: Vector2) -> SpaceObject {
     let mut asteroid_model = [Vector2::empty(); VERTS];
@@ -40,10 +41,13 @@ fn spawn_asteroid(asteroid_radius: f64, pos: Vector2) -> SpaceObject {
     asteroid
 }
 
-fn spawn_random_asteroids() -> Vec<SpaceObject> {
+fn spawn_random_asteroids(player_angle: f64) -> Vec<SpaceObject> {
     let mut asteroids: Vec<SpaceObject> = Vec::new();
-    for _ in 0..3 {
-        let random_pos = Vector2::new(random::<f64>() * 512f64, random::<f64>() * 512_f64);
+    for _ in 0..ASTEROID_SPAWN_COUNT {
+        let random_pos = Vector2::new(
+            random::<f64>() * 512_f64 * player_angle.cos(), 
+            random::<f64>() * 512_f64 * -player_angle.sin()
+        );
         asteroids.push(spawn_asteroid(DEFAULT_ASTEROID_SIZE, random_pos));
     }
     asteroids
@@ -78,7 +82,7 @@ fn main() {
         Vector2::new(4.0, 3.0),
     ];
     let mut player = SpaceObject {
-        pos: Vector2::new(32.0, 32.0),
+        pos: Vector2::new(SCREEN_WIDTH as f64/ 2f64, SCREEN_HEIGHT as f64 / 2f64),
         dir: Vector2::new(0.0, 0.0),
         angle: 0f64,
         radius: 0,
@@ -89,7 +93,7 @@ fn main() {
 
     let mut is_player_shooting = false;
 
-    let mut asteroids = spawn_random_asteroids();
+    let mut asteroids = spawn_random_asteroids(player.angle);
 
 
     logic.run(move |screen, keys, dt| {
@@ -126,11 +130,12 @@ fn main() {
             screen.draw_pixel(bullet.pos, Color::WHITE)
         });
 
-        player_bullets.retain(|bullet| {
+        player_bullets.retain_mut(|bullet| {
             let ( x, y ) = bullet.pos.as_i32();
             if x < 1 || x > SCREEN_WIDTH as i32 || y < 1 || y > SCREEN_HEIGHT as i32{
                 return false
             }
+            bullet.pos.wrap();
             true 
         });
 
@@ -154,7 +159,7 @@ fn main() {
         });
 
         if asteroids.is_empty() {
-            asteroids = spawn_random_asteroids();
+            asteroids = spawn_random_asteroids(player.angle);
         }
 
         asteroids.iter_mut().for_each(|asteroid| {
