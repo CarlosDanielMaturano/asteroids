@@ -8,9 +8,9 @@ const WINDOW_TITLE: &str = "Asteroids";
 const WINDOW_WIDTH: u32 = 800;
 const WINDOW_HEIGHT: u32 = 640;
 const BACKGROUND_COLOR: Color = Color::BLACK;
-const PIXEL_SIZE: u32 = 4;
-pub const SCREEN_HEIGHT: u32 = WINDOW_HEIGHT / PIXEL_SIZE;
-pub const SCREEN_WIDTH: u32 = WINDOW_WIDTH / PIXEL_SIZE;
+pub const PIXEL_SIZE: i32 = 4;
+pub const SCREEN_HEIGHT: u32 = WINDOW_HEIGHT / PIXEL_SIZE as u32;
+pub const SCREEN_WIDTH: u32 = WINDOW_WIDTH / PIXEL_SIZE as u32;
 
 pub struct Screen {
     ctx: sdl2::Sdl,
@@ -48,24 +48,11 @@ impl Screen {
         self.ctx.event_pump().unwrap()
     }
 
-    pub fn draw_pixel(&mut self, pos: Vector2, color: Color) {
-        let scale = PIXEL_SIZE as i32;
+    pub fn draw_pixel(&mut self, pos: Vector2, scale: i32, color: Color) {
         let mut pos = pos.clone();
         pos.wrap();
         let pos = pos.as_i32();
-        let pixel = Rect::new(pos.0 * scale, pos.1 * scale, PIXEL_SIZE, PIXEL_SIZE);
-        self.canvas.set_draw_color(color);
-        if let Err(err) = self.canvas.fill_rect(pixel) {
-            panic!("Unexpected error while drawing: {err}")
-        };
-    }
-
-    pub fn draw_font_pixel(&mut self, pos: Vector2, color: Color) {
-        let scale = 2i32;
-        let mut pos = pos.clone();
-        pos.wrap();
-        let pos = pos.as_i32();
-        let pixel = Rect::new(pos.0 * scale, pos.1 * scale, PIXEL_SIZE, PIXEL_SIZE);
+        let pixel = Rect::new(pos.0 * scale, pos.1 * scale, PIXEL_SIZE as u32, PIXEL_SIZE as u32);
         self.canvas.set_draw_color(color);
         if let Err(err) = self.canvas.fill_rect(pixel) {
             panic!("Unexpected error while drawing: {err}")
@@ -93,7 +80,8 @@ impl Screen {
                 Box::new((x_end..=x_start).rev())
             };
             for x in range {
-                self.draw_pixel(Vector2::new(x as f64, y as f64), color);
+                self.draw_pixel(Vector2::new(x as f64, y as f64), PIXEL_SIZE, color);
+
                 err += slope;
                 if err >= 1f64 {
                     err -= 1f64;
@@ -115,7 +103,7 @@ impl Screen {
             };
 
             for y in range {
-                self.draw_pixel(Vector2::new(x as f64, y as f64), color);
+                self.draw_pixel(Vector2::new(x as f64, y as f64), PIXEL_SIZE, color);
                 err += slope;
                 if err >= 1f64 {
                     err -= 1f64;
@@ -162,8 +150,9 @@ impl Screen {
                     }
                     let mut offset = space;
                     offset.x *= i as f64;
-                    self.draw_font_pixel(
+                    self.draw_pixel(
                         initial_pos + Vector2::new(x as f64, y as f64) + offset,
+                        2i32,
                         color,
                     )
                 }

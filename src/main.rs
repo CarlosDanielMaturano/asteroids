@@ -6,7 +6,7 @@ use crate::utils::vector2::Vector2;
 use game_logic::GameLogic;
 use rand::random;
 use rand::seq::SliceRandom;
-use screen::{SCREEN_HEIGHT, SCREEN_WIDTH};
+use screen::{PIXEL_SIZE, SCREEN_HEIGHT, SCREEN_WIDTH};
 use sdl2::keyboard::Scancode;
 use sdl2::pixels::Color;
 use std::f64::consts::PI;
@@ -127,7 +127,7 @@ fn main() {
 
         player_bullets.iter_mut().for_each(|bullet| {
             bullet.pos += bullet.dir * dt;
-            screen.draw_pixel(bullet.pos, Color::WHITE)
+            screen.draw_pixel(bullet.pos, PIXEL_SIZE as i32, Color::WHITE)
         });
 
         player_bullets.retain_mut(|bullet| {
